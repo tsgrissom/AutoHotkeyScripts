@@ -5,45 +5,45 @@
 A_LocalAppData := EnvGet("LocalAppData")
 
 ; --- Constants ---
-ExecutableName := "Flow.Launcher.exe"
-WindowSelector := Format("ahk_exe {}", ExecutableName)
-ProgramDirectory := Format("{}\FlowLauncher", A_LocalAppData)
-ExecutablePath := Format("{}\{}", ProgramDirectory, ExecutableName)
+EXECUTABLE_NAME := "Flow.Launcher.exe"
+WINDOW_SELECTOR := "ahk_exe " EXECUTABLE_NAME
+PROGRAM_DIRECTORY := A_LocalAppData "\FlowLauncher"
+EXECUTABLE_PATH := PROGRAM_DIRECTORY "\" EXECUTABLE_NAME
 
 ; --- Variables ---
 isDebuggingActive := false
 
 ; --- Functions ---
 
-Notify(Message) {
-    TrayTip("Flow Launcher", Message, 1)
+Notify(message) {
+    TrayTip("Flow Launcher", message, 1)
 }
 
-NotifyDebug(Message) {
+NotifyDebug(message) {
     global isDebuggingActive
 
     if (!isDebuggingActive) {
         return
     }
 
-    TrayTip("Flow Launcher (Debug)", Message, 1)
+    TrayTip("Flow Launcher (Debug)", message, 1)
 }
 
 SendOpenLauncherHotkey() {
     Send("{Blind}#!{Space}")
 }
 
-RunProgram(ShouldFocus := true) {
-    Run(ProgramDirectory . "\" . ExecutableName)
+RunProgram(shouldFocus := true) {
+    Run(PROGRAM_DIRECTORY . "\" . EXECUTABLE_NAME)
     
-    if (!ShouldFocus) {
+    if (!shouldFocus) {
         return
     }
 
     NotifyDebug("Waiting for Flow Launcher to initialize...")
 
     ; TODO This doesn't work
-    if (ProcessWait(ExecutableName, 1)) {
+    if (ProcessWait(EXECUTABLE_NAME, 1)) {
         ; NotifyDebug("Flow Launcher process exists. Sleeping 700ms for initialize...")
         Sleep 700
         ; NotifyDebug("Sending Flow Launcher hotkey...")
@@ -58,7 +58,7 @@ RunProgram(ShouldFocus := true) {
 
 ; Hotkey: Press Win+Space to open Flow Launcher
 #Space:: {
-    if (ProcessExist(ExecutableName)) {
+    if (ProcessExist(EXECUTABLE_NAME)) {
         NotifyDebug("Program already open. Focusing with hotkey...")
         SendOpenLauncherHotkey()
     } else {
@@ -73,15 +73,15 @@ RunProgram(ShouldFocus := true) {
         return
     }
 
-    if (!ProcessExist(ExecutableName)) {
+    if (!ProcessExist(EXECUTABLE_NAME)) {
         NotifyDebug("Failed to terminate Flow Launcher because it is not running")
         return
     }
 
     NotifyDebug("Terminating Flow Launcher process...")
-    ProcessClose(ExecutableName)
+    ProcessClose(EXECUTABLE_NAME)
 
-    if (ProcessWaitClose(ExecutableName, 1)) {
+    if (ProcessWaitClose(EXECUTABLE_NAME, 1)) {
         Notify("Error: Failed to terminate Flow Launcher process")
     } else {
         NotifyDebug("Flow Launcher terminated")
