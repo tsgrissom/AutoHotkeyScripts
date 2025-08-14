@@ -1,36 +1,46 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; Constants
+; --- Constants ---
+
+ExecutableNameAimlabs := "AimLab_tb.exe"
+ExecutableNameKovaaks := "FPSAimTrainer-Win64-Shipping.exe"
+WindowSelectorAimlabs := Format("ahk_exe {}", ExecutableNameAimlabs)
+WindowSelectorKovaaks := Format("ahk_exe {}", ExecutableNameKovaaks)
 KeyCodeFireWeapon := "F"
 KeyCodeRestartTask := "T"
-KeyNameFireWeapon := "Fire Key (" . KeyCodeFireWeapon . ")"
-KeyNameRestartTask := "Restart Key (" . KeyCodeRestartTask . ")"
+KeyNameFireWeapon := Format("Fire Key ({})", KeyCodeFireWeapon)
+KeyNameRestartTask := Format("Restart Key ({})", KeyCodeRestartTask)
 
-WindowSelectorAimlabs := "ahk_exe AimLab_tb.exe"
-WindowSelectorKovaaks := "ahk_exe FPSAimTrainer-Win64-Shipping.exe"
+; --- Variables ---
 
-; Variables
 isHoldingFireKeyInAimlabs := false
 isHoldingFireKeyInKovaaks := false
 
-; Helper Functions
+; --- Helper Functions ---
+
+SendTrayTip(AppName, Message) {
+    TrayTip(AppName, Message, 1)
+}
+
 SendFireWeaponKeyDown() {
-    Send("{" . KeyCodeFireWeapon . " down}")
+    ; Send("{" . KeyCodeFireWeapon . " down}")
+    Send(Format("{{} down}", KeyCodeFireWeapon))
 }
 
 SendFireWeaponKeyUp() {
-    Send("{ " . KeyCodeFireWeapon . " up}")
+    ; Send("{ " . KeyCodeFireWeapon . " up}")
+    Send(Format("{{} up}", KeyCodeFireWeapon))
 }
 
 StartHoldingFireKey(AppName) {
     SendFireWeaponKeyDown()
-    SendTrayTip(AppName, KeyNameFireWeapon . " is being held")
+    SendTrayTip(AppName, Format("{} is being held", KeyNameFireWeapon))
 }
 
 StopHoldingFireKey(AppName) {
     SendFireWeaponKeyUp()
-    SendTrayTip(AppName, KeyNameFireWeapon . " was released")
+    SendTrayTip(AppName, Format("{} was released", KeyNameFireWeapon))
 }
 
 ResetScriptState() {
@@ -39,14 +49,11 @@ ResetScriptState() {
     SendFireWeaponKeyUp()
 }
 
-SendTrayTip(AppName, Message) {
-    TrayTip(AppName, Message, 1)
-}
+; --- Event Handler Functions ---
 
-; Event Handler Functions
 OnPressRestartKey() {
     global isHoldingFireKeyInAimlabs, isHoldingFireKeyInKovaaks
-    local text := KeyNameFireWeapon . " was released because the " . KeyNameRestartTask " was pressed"
+    local text := Format("{} was released because the {} was pressed", KeyNameFireWeapon, KeyNameRestartTask)
 
     if (isHoldingFireKeyInAimlabs) {
         isHoldingFireKeyInAimlabs := false
@@ -102,6 +109,8 @@ OnPressToggleFireKey() {
     }
 }
 
+; --- Hotkeys ---
+
 ; Hotkeys: Toggle Fire Key for Aimlabs
 #HotIf WinActive(WindowSelectorAimlabs)
 ; Hotkey: "Alt+F" to toggle Fire Key in Aimlabs
@@ -118,11 +127,13 @@ T::OnPressRestartKey
 T::OnPressRestartKey
 #HotIf
 
+; --- On Script Start ---
+
 ; Check window every 100ms for loss of focus
 SetTimer(CheckWindow, 100)
 CheckWindow() {
     global isHoldingFireKeyInAimlabs, isHoldingFireKeyInKovaaks
-    local text := KeyNameFireWeapon . " was released because app lost focus"
+    local text := Format("{} was released because app lost focus", KeyNameFireWeapon)
 
     if (!WinActive(WindowSelectorAimlabs) && isHoldingFireKeyInAimlabs) {
         isHoldingFireKeyInAimlabs := false
@@ -142,7 +153,7 @@ CheckWindow() {
 SetTimer(AutoTimeout, -120000)
 AutoTimeout() {
     global isHoldingFireKeyInAimlabs, isHoldingFireKeyInKovaaks
-    local text := KeyNameFireWeapon . " was released because it automatically timed out"
+    local text := Format("{} was released because it automatically timed out", KeyNameFireWeapon)
 
     if (isHoldingFireKeyInAimlabs) {
         isHoldingFireKeyInAimlabs := false
@@ -157,10 +168,12 @@ AutoTimeout() {
     }
 }
 
+; --- On Script Exit ---
+
 ; Ensure F is released when script exits
 OnScriptExit(ExitReason, ExitCode) {
     global isHoldingFireKeyInAimlabs, isHoldingFireKeyInKovaaks
-    local text := KeyNameFireWeapon . " was released because the script exited"
+    local text := Format("{} was released because the script exited", KeyNameFireWeapon)
 
     if (isHoldingFireKeyInAimlabs || isHoldingFireKeyInKovaaks) {
         if (isHoldingFireKeyInAimlabs) {
@@ -172,8 +185,6 @@ OnScriptExit(ExitReason, ExitCode) {
         }
 
         ResetScriptState()
-    } else {
-        SendTrayTip("Toggle Fire Key", "Nothing was held when script ended so nothing was released")
     }
 }
 

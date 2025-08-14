@@ -1,26 +1,32 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-; Constants
+; --- Environment ---
+A_LocalAppData := EnvGet("LocalAppData")
+
+; --- Constants ---
 ExecutableName := "Flow.Launcher.exe"
-WindowSelector := "ahk_exe " . ExecutableName
-PathProgramDirectory := "C:\Users\Tyler\AppData\Local\FlowLauncher"
-; TODO Is there a better way to these?
-PathProgramExecutable := PathProgramDirectory . "\" . ExecutableName
+WindowSelector := Format("ahk_exe {}", ExecutableName)
+ProgramDirectory := Format("{}\FlowLauncher", A_LocalAppData)
+ExecutablePath := Format("{}\{}", ProgramDirectory, ExecutableName)
 
-; Variables
-isDebuggingActive := true
+; --- Variables ---
+isDebuggingActive := false
 
-; Helper Functions
+; --- Functions ---
 
 Notify(Message) {
     TrayTip("Flow Launcher", Message, 1)
 }
 
 NotifyDebug(Message) {
-    if (isDebuggingActive) {
-        TrayTip("Flow Launcher (Debug)", Message, 1)
+    global isDebuggingActive
+
+    if (!isDebuggingActive) {
+        return
     }
+
+    TrayTip("Flow Launcher (Debug)", Message, 1)
 }
 
 SendOpenLauncherHotkey() {
@@ -28,7 +34,7 @@ SendOpenLauncherHotkey() {
 }
 
 RunProgram(ShouldFocus := true) {
-    Run(PathProgramDirectory . "\" . ExecutableName)
+    Run(ProgramDirectory . "\" . ExecutableName)
     
     if (!ShouldFocus) {
         return
@@ -48,6 +54,8 @@ RunProgram(ShouldFocus := true) {
     }
 }
 
+; --- Hotkeys ---
+
 ; Hotkey: Press Win+Space to open Flow Launcher
 #Space:: {
     if (ProcessExist(ExecutableName)) {
@@ -60,22 +68,22 @@ RunProgram(ShouldFocus := true) {
 }
 
 ; Hotkey: Debug tool to kill Flow Launcher process
-; !X:: {
-;     if (!isDebuggingActive) {
-;         return
-;     }
+!X:: {
+    if (!isDebuggingActive) {
+        return
+    }
 
-;     if (!ProcessExist(ExecutableName)) {
-;         NotifyDebug("Failed to terminate Flow Launcher because it is not running")
-;         return
-;     }
+    if (!ProcessExist(ExecutableName)) {
+        NotifyDebug("Failed to terminate Flow Launcher because it is not running")
+        return
+    }
 
-;     NotifyDebug("Terminating Flow Launcher process...")
-;     ProcessClose(ExecutableName)
+    NotifyDebug("Terminating Flow Launcher process...")
+    ProcessClose(ExecutableName)
 
-;     if (ProcessWaitClose(ExecutableName, 1)) {
-;         Notify("Error: Failed to terminate Flow Launcher process")
-;     } else {
-;         NotifyDebug("Flow Launcher terminated")
-;     }
-; }
+    if (ProcessWaitClose(ExecutableName, 1)) {
+        Notify("Error: Failed to terminate Flow Launcher process")
+    } else {
+        NotifyDebug("Flow Launcher terminated")
+    }
+}
