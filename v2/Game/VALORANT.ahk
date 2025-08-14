@@ -16,5 +16,6 @@ TargetProcesses := [
     "Moonlight Buddy",
     "Windows Game Mode",
     "Windows Game Bar",
-    "Wallpaper Engine"
+    "Wallpaper Engine",
+    "Greenshot"
 ]

@@ -5,12 +5,13 @@
 
 ExecutableNameAimlabs := "AimLab_tb.exe"
 ExecutableNameKovaaks := "FPSAimTrainer-Win64-Shipping.exe"
-WindowSelectorAimlabs := Format("ahk_exe {}", ExecutableNameAimlabs)
-WindowSelectorKovaaks := Format("ahk_exe {}", ExecutableNameKovaaks)
+
+WindowSelectorAimlabs := "ahk_exe " ExecutableNameAimlabs
+WindowSelectorKovaaks := "ahk_exe " ExecutableNameKovaaks
 KeyCodeFireWeapon := "F"
 KeyCodeRestartTask := "T"
-KeyNameFireWeapon := Format("Fire Key ({})", KeyCodeFireWeapon)
-KeyNameRestartTask := Format("Restart Key ({})", KeyCodeRestartTask)
+KeyNameFireWeapon := "Fire Key (" KeyCodeFireWeapon ")"
+KeyNameRestartTask := "Restart Key (" KeyCodeRestartTask ")"
 
 ; --- Variables ---
 
@@ -23,24 +24,23 @@ SendTrayTip(AppName, Message) {
     TrayTip(AppName, Message, 1)
 }
 
+
 SendFireWeaponKeyDown() {
-    ; Send("{" . KeyCodeFireWeapon . " down}")
-    Send(Format("{{} down}", KeyCodeFireWeapon))
+    Send "{" KeyCodeFireWeapon " down}"
 }
 
 SendFireWeaponKeyUp() {
-    ; Send("{ " . KeyCodeFireWeapon . " up}")
-    Send(Format("{{} up}", KeyCodeFireWeapon))
+    Send "{" KeyCodeFireWeapon " up}"
 }
 
 StartHoldingFireKey(AppName) {
     SendFireWeaponKeyDown()
-    SendTrayTip(AppName, Format("{} is being held", KeyNameFireWeapon))
+    SendTrayTip(AppName, KeyNameFireWeapon " is being held")
 }
 
 StopHoldingFireKey(AppName) {
     SendFireWeaponKeyUp()
-    SendTrayTip(AppName, Format("{} was released", KeyNameFireWeapon))
+    SendTrayTip(AppName, KeyNameFireWeapon " was released")
 }
 
 ResetScriptState() {
@@ -53,9 +53,9 @@ ResetScriptState() {
 
 OnPressRestartKey() {
     global isHoldingFireKeyInAimlabs, isHoldingFireKeyInKovaaks
-    local text := Format("{} was released because the {} was pressed", KeyNameFireWeapon, KeyNameRestartTask)
+    text := KeyNameFireWeapon " was released because the " KeyNameRestartTask " was pressed"
 
-    if (isHoldingFireKeyInAimlabs) {
+    if (isHoldingFireKeyInAimlabs) { 
         isHoldingFireKeyInAimlabs := false
         SendFireWeaponKeyUp()
         SendTrayTip("Aimlabs", text)
