@@ -9,26 +9,26 @@
 
 ; --- Constants ---
 
-ExecutableNameTerminal := "WindowsTerminal.exe"
-ExecutableNameNotepadPlusPlus := "notepad++.exe"
+EXECUTABLE_NAME_TERMINAL := "WindowsTerminal.exe"
+EXECUTABLE_NAME_NOTEPADPP := "notepad++.exe"
 
-WindowSelectorTerminal := Format("ahk_exe {}", ExecutableNameTerminal)
-WindowSelectorNotepadPlusPlus := Format("ahk_exe {}", ExecutableNameNotepadPlusPlus)
+WINDOW_SELECTOR_TERMINAL := "ahk_exe " EXECUTABLE_NAME_TERMINAL
+WINDOW_SELECTOR_NOTEPADPP := "ahk_exe " EXECUTABLE_NAME_NOTEPADPP
 
 ; --- OS Navigation Hotkeys ---
 
 ; Hotkey (Win+N): Opens Notepad++
 #n:: {
-    if WinExist(WindowSelectorNotepadPlusPlus) {
-        WinActivate
-        SendInput "^{n}"
+    if WinExist(WINDOW_SELECTOR_NOTEPADPP) {
+        WinActivate()
+        Send "^{N}"
     } else {
         Run "Notepad++"
         ; TODO Finish
         if not WinWaitActive("Notepad++") {
-            MsgBox "Something went wrong: Notepad++ was not active when it should have been"
+            MsgBox "Error: Notepad++ did not start"
         } else {
-            WinActivate
+            WinActivate()
         }
     }
 }
@@ -39,17 +39,18 @@ WindowSelectorNotepadPlusPlus := Format("ahk_exe {}", ExecutableNameNotepadPlusP
 ; Hotkey (Win+Alt+D): Opens Downloads in Windows Explorer
 #!d:: {
     ; TODO Check if explorer already exists, if so open it there, otherwise do the below
-    Run "explorer C:\Users\Tyler\Downloads"
+    ; TODO Find Downloads folder in a better way
+    Run "explorer C:\Users\" A_UserName "\Downloads"
 }
 
 ; Hotkey (Win+T): Opens Windows Terminal
 #t:: {
-    if not WinExist(WindowSelectorTerminal) {
+    if not WinExist(WINDOW_SELECTOR_TERMINAL) {
         Run "wt"
         Sleep 300
-        WinActivate(WindowSelectorTerminal)
+        WinActivate(WINDOW_SELECTOR_TERMINAL)
     } else {
-        WinActivate
+        WinActivate()
         Send "^+{T}"
     }
 }
@@ -57,10 +58,10 @@ WindowSelectorNotepadPlusPlus := Format("ahk_exe {}", ExecutableNameNotepadPlusP
 ; --- Program-Specific Hotkeys ---
 
 ; Windows Terminal
-#HotIf WinActive(WindowSelectorTerminal)
-^w:: SendInput "^+w"
+#HotIf WinActive(WINDOW_SELECTOR_TERMINAL)
+^W:: Send "^+{W}"
 
 ; File Explorer
 #HotIf WinActive("ahk_exe explorer.exe")
 ; Hotkey (F3): Creates a new folder by triggering the built-in keyboard shortcut
-F3:: SendInput "^+{N}"
+F3:: Send "^+{N}"

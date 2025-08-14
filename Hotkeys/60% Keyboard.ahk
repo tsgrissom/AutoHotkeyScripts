@@ -7,21 +7,21 @@ SendMode "Input"
 
 ; --- Variables ---
 
-MovementKeyUp := "W"
-MovementKeyLeft := "A"
-MovementKeyDown := "S"
-MovementKeyRight := "D"
+KEY_CODE_MOVE_UP := "W"
+KEY_CODE_MOVE_LEFT := "A"
+KEY_CODE_MOVE_DOWN := "S"
+KEY_CODE_MOVE_RIGHT := "D"
 
-; --- Helper Functions ---
+; --- Functions ---
 
-PressArrowKey(Direction) {
+PressArrowKey(direction) {
     modifiers := ""
 
     if (GetKeyState("Shift", "P")) {
         modifiers .= "+"
     }
 
-    Send modifiers "{" Direction "}"
+    Send modifiers "{" direction "}"
 }
 
 ; --- Character Hotkeys ---
@@ -34,10 +34,10 @@ PressArrowKey(Direction) {
 ; --- Directional Arrow Hotkeys ---
 
 ; Hotkey (Alt+W): Triggers Up arrow key
-Hotkey("*!" . MovementKeyUp, (*) => PressArrowKey("Up"))
+Hotkey("*!" . KEY_CODE_MOVE_UP, (*) => PressArrowKey("Up"))
 ; Hotkey (Alt+A): Triggers Left arrow key
-Hotkey("*!" . MovementKeyLeft, (*) => PressArrowKey("Left"))
+Hotkey("*!" . KEY_CODE_MOVE_LEFT, (*) => PressArrowKey("Left"))
 ; Hotkey (Alt+S): Triggers Down arrow key
-Hotkey("*!" . MovementKeyDown, (*) => PressArrowKey("Down"))
+Hotkey("*!" . KEY_CODE_MOVE_DOWN, (*) => PressArrowKey("Down"))
 ; Hotkey (Alt+D): Triggers Right arrow key
-Hotkey("*!" . MovementKeyRight, (*) => PressArrowKey("Right"))
+Hotkey("*!" . KEY_CODE_MOVE_RIGHT, (*) => PressArrowKey("Right"))
