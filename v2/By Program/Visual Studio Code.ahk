@@ -2,8 +2,8 @@
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-
 #HotIf WinActive("ahk_exe Code.exe")
+
 ; If file saved, cancel existing Code Runner before running it again
 ^s:: {
     SendInput "^s"

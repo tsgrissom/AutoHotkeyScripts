@@ -6,7 +6,6 @@ Persistent
 SendMode "Input"
 
 ; Function which makes the directional arrow hotkeys below a bit more DRY
-; TODO: Walk through what I did here when my brain is working better
 PressArrowKey(Direction, HoldShift := false) {
     Inp := (HoldShift ? "{Shift down}{" : "{") . Direction . (HoldShift ? "}{Shift up}" : "}")
     Send Inp

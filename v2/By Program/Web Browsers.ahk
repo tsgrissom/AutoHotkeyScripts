@@ -2,7 +2,6 @@
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-Persistent
 SendMode "Input"
 
 Browsers := ["ahk_exe msedge.exe", "ahk_exe chrome.exe", "ahk_exe firefox.exe", "ahk_exe opera.exe", "ahk_exe operagx.exe"]
