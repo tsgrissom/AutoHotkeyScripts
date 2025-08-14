@@ -1,34 +1,31 @@
-; DISCLAIMER: In theory, this script supports the listed browsers in variable Browsers, but this has not been tested outside of MS Edge.
-
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-SendMode "Input"
 
-Browsers := ["ahk_exe msedge.exe", "ahk_exe chrome.exe", "ahk_exe firefox.exe", "ahk_exe opera.exe", "ahk_exe operagx.exe"]
-IsBrowser := false
+EXECUTABLE_NAMES := ["msedge.exe", "chrome.exe", "firefox.exe", "opera.exe", "operagx.exe"]
 
-for Browser in Browsers {
-    IsBrowser := IsBrowser or WinActive(Browser)
+IsBrowser() {
+    for value in EXECUTABLE_NAMES {
+        if (WinActive("ahk_exe " value)) {
+            return true
+        }
+    }
+    return false
 }
 
-#HotIf IsBrowser
-
-ScrollTabs(Previous) {
-    DirectionalKey := Previous ? "{Shift down}" : ""
-    Inp := "{Alt up}{Tab up}{Ctrl down}" . DirectionalKey . "{Tab down}{Ctrl up}{Shift up}{Tab up}"
-    Send Inp
+ScrollTabs(previous) {
+    directionalKey := previous ? "{Shift down}" : ""
+    Send "{Alt up}{Tab up}{Ctrl down}" directionalKey "{Tab down}{Ctrl up}{Shift up}{Tab up}"
     Sleep 75
 }
 
-ChangePage(Forward) { ; Supplied w/ a boolean representing directions forward (right) & backwards (left)
-    Direction := Forward ? "Right" : "Left"
-    Inp := "{Alt down}{" . Direction . " down}{Alt up}{" . Direction . " up}"
-    Send Inp
+ChangePage(forward) {
+    direction := forward ? "Right" : "Left"
+    Send "{Alt down}{" direction " down}{Alt up}{" direction " up}"
     Sleep 500
 }
 
+#HotIf IsBrowser()
 !WheelUp::ScrollTabs(Previous := true)
 !WheelDown::ScrollTabs(Previous := false)
-
 +WheelUp::ChangePage(Forward := false)
 +WheelDown::ChangePage(Forward := true)
